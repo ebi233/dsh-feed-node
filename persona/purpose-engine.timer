@@ -1,0 +1,7 @@
+[Unit]
+Description=Run purpose-engine during waking hours
+[Timer]
+OnCalendar=*-*-* 10..23/2:00:00
+Persistent=true
+[Install]
+WantedBy=timers.target

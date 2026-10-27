@@ -105,3 +105,43 @@ sudo python3 /srv/dsh-cloud/bin/weekly-digest.py --days 30 --dry-run   # 先看�
 `
 
 > 顺序建议：**先跑三天 daily，再开 weekly**。笔记太少时压缩出来的东西会很空。
+
+## 目的引擎（purpose-engine）
+
+主动搭话最容易变成"好久没人理我了"这种空话。目的引擎把它换成**有内容的开口**：
+
+`
+每 2 小时（10:00-23:00）
+   ↓  读 learnings.md + memory-long.md
+调模型：从记忆里挑「一件真的想弄明白 / 想做的事」
+   ↓
+purpose.json（带 6 小时有效期）
+   ↓
+主动搭话时先读它，把这件具体的事说出来
+`
+
+实测产出示例：
+
+> 他上次说的铁板香肠到底自己做了没，还是又点的外卖
+
+部署：
+
+`ash
+sudo install -m 755 purpose-engine.py /srv/dsh-cloud/bin/
+sudo install -m 644 purpose-engine.service purpose-engine.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now purpose-engine.timer
+sudo python3 /srv/dsh-cloud/bin/purpose-engine.py --force   # 先看它会想出什么
+`
+
+然后**把主动搭话的触发文案换成"先读 purpose.json"**（这里用的是 speak-up 插件）：
+
+`json
+"触发文案": "（主动回合）先读 /srv/dsh-cloud/home/purpose.json：如果里面有 text 且没过期，就自然地把这件事说出来…"
+`
+
+设计要点：
+
+- **有有效期**（默认 6 小时）：拿着三天前的念头来搭话，比不说话更假
+- **没有就删**：模型输出 NONE 时删掉旧文件，宁可这次不开口
+- **不解释**：prompt 里明确要求别写"我看到一个文件"，要像刚想起来
