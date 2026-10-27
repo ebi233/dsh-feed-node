@@ -145,3 +145,48 @@ sudo python3 /srv/dsh-cloud/bin/purpose-engine.py --force   # 先看它会想出
 - **有有效期**（默认 6 小时）：拿着三天前的念头来搭话，比不说话更假
 - **没有就删**：模型输出 NONE 时删掉旧文件，宁可这次不开口
 - **不解释**：prompt 里明确要求别写"我看到一个文件"，要像刚想起来
+
+## 全量存档（archive-session）
+
+前面那些都是「提炼过的记忆」；这一层是**原话全留**：
+
+`
+每 30 分钟
+   ↓ 读会话日志，只取真正说出口的 text 块（丢掉 reasoning / tool-call）
+archive/2026-10-28.jsonl
+   {"t":"22:31:05","role":"老哥","text":"..."}
+   ↓
+她需要时用 recall_archive(query, days) 搜
+`
+
+三条设计原则：
+
+1. **只存不注入**：全量原话不进上下文，否则 token 直接爆
+2. **只存人话**：ssistant 的 reasoning 和 tool-call 全部丢弃（第一版没丢，存进去一堆英文推理，已修）
+3. **永不删除**：按天切片，append-only
+
+配合 memory-long 插件的两个工具：
+
+| 工具 | 作用 |
+| --- | --- |
+| ecall_archive(query, days, limit) | 在历史原话里搜关键词 |
+| rchive_stats() | 看存了多少天、多少条 |
+
+部署：
+
+`ash
+sudo install -m 755 archive-session.py /srv/dsh-cloud/bin/
+sudo install -m 644 archive-session.service archive-session.timer /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now archive-session.timer
+sudo python3 /srv/dsh-cloud/bin/archive-session.py      # 首次把历史全跑一遍
+`
+
+## 五层记忆总览
+
+| 层 | 内容 | 会不会忘 | 怎么进上下文 |
+| --- | --- | --- | --- |
+| 全量存档 rchive/ | 每句原话 | ❌ 永不 | 她主动 ecall_archive 才搜 |
+| 永久记忆 memory-long.md | 身份/边界/约定 | ❌ 永不 | **每轮全量注入** |
+| 长期事实（fish-memory） | 抽出来的事实 | ✅ 用进废退 | 按话题检索注入 |
+| 每日笔记 learnings.md | 复盘出的流水账 | ❌ | 她主动看 |
+| 每周画像 weekly-digest.md | 一周浓缩 | ❌ | 她主动看 |

@@ -4,7 +4,7 @@
 // 每条带日期，条目上限控制长度；超了会提示她（或你）去清理。
 //
 // 文件：$DSH_HOME/memory-long.md（默认 ~/.dsh/memory-long.md）
-import { existsSync, readFileSync, appendFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, appendFileSync, writeFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { loadHostDeps } from './hostdeps.mjs'
@@ -18,6 +18,7 @@ export const inject = ['systemPrompt', 'tools', 'webServer']
 const DSH_HOME = process.env.DSH_HOME || join(homedir(), '.dsh')
 const FILE = process.env.LONG_MEMORY_FILE || join(DSH_HOME, 'memory-long.md')
 const MAX_ITEMS = Number(process.env.LONG_MEMORY_MAX || 60)
+const ARCHIVE_DIR = process.env.ARCHIVE_DIR || join(DSH_HOME, 'archive')
 
 function readAll() {
   try {
@@ -108,6 +109,76 @@ export function apply(ctx) {
     },
   })
 
+  // ---------- 全量存档检索 ----------
+  function archiveFiles(days) {
+    try {
+      const files = readdirSync(ARCHIVE_DIR).filter((n) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(n)).sort()
+      if (!days) return files
+      const cutoff = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10)
+      return files.filter((n) => n.slice(0, 10) >= cutoff)
+    } catch {
+      return []
+    }
+  }
+
+  function searchArchive(query, days, limit) {
+    const q = String(query || '').trim().toLowerCase()
+    if (!q) return []
+    const out = []
+    for (const name of archiveFiles(days).reverse()) {
+      let raw = ''
+      try {
+        raw = readFileSync(join(ARCHIVE_DIR, name), 'utf8')
+      } catch {
+        continue
+      }
+      for (const line of raw.split('\n')) {
+        if (!line.trim()) continue
+        if (!line.toLowerCase().includes(q)) continue
+        try {
+          const rec = JSON.parse(line)
+          out.push({ date: name.slice(0, 10), t: rec.t, role: rec.role, text: String(rec.text || '').slice(0, 400) })
+        } catch {
+          // 坏行跳过
+        }
+        if (out.length >= limit) return out.reverse()
+      }
+    }
+    return out.reverse()
+  }
+
+  tool({
+    name: 'recall_archive',
+    description: '翻旧账：在你们所有的历史对话原话里搜关键词，返回当时的日期、谁说的、原话。'
+      + '平时这些不进上下文，只有你主动搜才会出来。想确认「他以前是不是说过」「那天后来怎么了」时用。',
+    parameters: {
+      query: { type: 'string', description: '关键词（一两个词就够，别整句）' },
+      days: { type: 'number', description: '只搜最近多少天，默认 30，0 = 全部' },
+      limit: { type: 'number', description: '最多返回几条，默认 8' },
+    },
+    async execute(args) {
+      const hits = searchArchive(args.query, Number(args.days ?? 30), Math.min(Number(args.limit ?? 8), 20))
+      return { count: hits.length, hits }
+    },
+  })
+
+  tool({
+    name: 'archive_stats',
+    description: '看看全量存档里存了多少天、多少条（不用来查内容，查内容用 recall_archive）。',
+    parameters: {},
+    async execute() {
+      const files = archiveFiles(0)
+      let total = 0
+      for (const name of files) {
+        try {
+          total += readFileSync(join(ARCHIVE_DIR, name), 'utf8').split('\n').filter((l) => l.trim()).length
+        } catch {
+          // 跳过
+        }
+      }
+      return { days: files.length, total, first: files[0] || null, last: files[files.length - 1] || null }
+    },
+  })
   // 诊断：确认插件活了、文件在哪、现在注入什么
   try {
     ctx.effect(() => ctx.webServer.register({
@@ -123,6 +194,19 @@ export function apply(ctx) {
         }, null, 2)
         res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' })
         res.end(body)
+      },
+    }))
+
+    ctx.effect(() => ctx.webServer.register({
+      kind: 'prefix',
+      path: '/dsh-long-memory/recall',
+      handler: async (req, res) => {
+        const u = new URL(String(req.url || '/'), 'http://127.0.0.1')
+        const q = u.searchParams.get('query') || ''
+        const days = Number(u.searchParams.get('days') || 30)
+        const hits = searchArchive(q, days, 10)
+        res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' })
+        res.end(JSON.stringify({ ok: true, query: q, count: hits.length, hits }, null, 2))
       },
     }))
   } catch (error) {

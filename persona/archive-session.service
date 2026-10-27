@@ -1,0 +1,6 @@
+[Unit]
+Description=Archive every conversation turn into daily jsonl files (append-only)
+[Service]
+Type=oneshot
+User=root
+ExecStart=/srv/dsh-voice/.venv/bin/python /srv/dsh-cloud/bin/archive-session.py
