@@ -1,0 +1,42 @@
+{
+  "name": "dsh-feed-node",
+  "version": "0.1.0",
+  "description": "Local browser node that gives a DeepSeek Harness agent access to Xiaohongshu (RED) and Douyin search/hot lists, using your own logged-in browser and residential IP. Ships with a matching DSH plugin.",
+  "type": "module",
+  "license": "MIT",
+  "main": "src/server.mjs",
+  "bin": {
+    "dsh-feed-node": "src/server.mjs"
+  },
+  "files": [
+    "src",
+    "plugin",
+    "docs",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/server.mjs",
+    "check": "node --check src/server.mjs && node --check plugin/index.js"
+  },
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "xiaohongshu",
+    "rednote",
+    "douyin",
+    "playwright",
+    "browser-automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_NAME/dsh-feed-node.git"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "dsh-feed-tools",
+  "version": "0.1.0",
+  "description": "DSH plugin: Xiaohongshu / Douyin search tools backed by a local dsh-feed-node",
+  "type": "module",
+  "license": "MIT",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "hostdeps.mjs",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "xiaohongshu",
+    "douyin"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

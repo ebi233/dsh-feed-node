@@ -1,0 +1,4 @@
+# dsh-feed-tools：把本机 dsh-feed-node 的小红书/抖音能力挂成 agent 工具
+- insert:
+    - id: feed-tools
+      name: dsh-feed-tools
