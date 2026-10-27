@@ -400,3 +400,14 @@ MIT。见 [LICENSE](LICENSE)。
 | memory-long/ | **永久记忆插件**：长期成立的事实每轮硬注入，永不遗忘 |
 
 后两个和"取数"无关，是同一个 agent 伙伴项目里的配套工具——都跑在 DSH 上。
+
+### 四个定时任务（都在服务器上，互相配合）
+
+| 任务 | 时间 | 干什么 |
+| --- | --- | --- |
+| daily-reflect.timer | 每天 03:00 | 读当天对话 → 提炼事实与教训 → 追加 learnings.md |
+| weekly-digest.timer | 每周日 04:00 | 把 7 天笔记压成一段「这周的老哥」 |
+| purpose-engine.timer | 10:00–23:00 每 2 小时 | 从记忆里想出一件真想弄明白的事 → purpose.json（6h 过期） |
+| dsh-keepalive（非 timer） | 常驻 | 让云端会话一直「活着」，否则 QQ 消息进不来 |
+
+主动性那一条的链路：purpose.json ← purpose-engine ← 记忆；说话那一端由 speak-up 插件的「触发文案」去读它。
