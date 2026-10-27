@@ -1,0 +1,4 @@
+# dsh-long-memory：永久记忆（每轮硬注入）
+- insert:
+    - id: long-memory
+      name: dsh-long-memory

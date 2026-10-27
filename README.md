@@ -388,3 +388,15 @@ MIT。见 [LICENSE](LICENSE)。
 - 聊天中值得记的事，她可以调 write_learning 当场写一行
 
 详见 [persona/README.md](persona/README.md)。人设正文和真实笔记属于私人内容，**不进仓库**。
+
+---
+
+## 这个仓库里有什么
+
+| 目录 | 是什么 |
+| --- | --- |
+| src/ + plugin/ + scripts/ | **取数节点**：给 agent 小红书/抖音搜索能力（见上面正文） |
+| persona/ | **学习闭环**：每日复盘 + 每周画像，让 agent 从聊天里积累记忆 |
+| memory-long/ | **永久记忆插件**：长期成立的事实每轮硬注入，永不遗忘 |
+
+后两个和"取数"无关，是同一个 agent 伙伴项目里的配套工具——都跑在 DSH 上。
