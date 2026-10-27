@@ -74,3 +74,34 @@ LEARN   = HOME / "learnings.md"
 - **人设自改**：让复盘额外输出「建议改的人设条目」，**人工确认后**再改，别让它直接写人设
 - **周报**：把 7 天的笔记再压成一段"她眼里这周的老哥"，注入人设开头
 - **成本**：每轮记忆抽取约 ¥0.001，每日复盘约 ¥0.05~0.2，一年几十块
+
+## 每周画像（weekly-digest）
+
+光有每天的流水账会越来越长；每周日 04:00 把最近 7 天的笔记**压成一段**：
+
+`
+# 这周的老哥（2026-11-03 生成，覆盖 7 天笔记）
+
+老哥这周心情不错，说今年过得开心…
+他会自己下厨或点铁板香肠、意面、卧蛋这类吃的，还拍照馋泡泡。
+这周我该注意：别总反问他，会被吐槽像人机；认错要干脆别嘴硬。
+`
+
+部署：
+
+`ash
+sudo install -m 755 weekly-digest.py /srv/dsh-cloud/bin/weekly-digest.py
+sudo install -m 644 weekly-digest.service weekly-digest.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now weekly-digest.timer
+sudo python3 /srv/dsh-cloud/bin/weekly-digest.py --days 30 --dry-run   # 先看效果
+`
+
+写进人设的那句（让两者都生效）：
+
+`
+家目录里有 learnings.md（每天）和 weekly-digest.md（每周），聊天前瞄一眼，
+优先看 weekly-digest.md，那是浓缩过的。
+`
+
+> 顺序建议：**先跑三天 daily，再开 weekly**。笔记太少时压缩出来的东西会很空。

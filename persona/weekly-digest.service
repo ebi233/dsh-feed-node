@@ -1,0 +1,6 @@
+[Unit]
+Description=Weekly digest of the companion's learnings
+[Service]
+Type=oneshot
+User=root
+ExecStart=/srv/dsh-voice/.venv/bin/python /srv/dsh-cloud/bin/weekly-digest.py
