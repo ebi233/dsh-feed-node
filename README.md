@@ -117,7 +117,7 @@ curl "http://127.0.0.1:8787/show-url?url=https%3A%2F%2Fwww.douyin.com%2Fsearch%2
 ## 第一步：装服务
 
 ```powershell
-git clone https://github.com/YOUR_NAME/dsh-feed-node.git
+git clone https://github.com/ebi233/dsh-feed-node.git
 cd dsh-feed-node
 npm install
 ```

@@ -114,7 +114,7 @@ It lasts for a while, not for a single request.
 ## 1. Install the node
 
 ```powershell
-git clone https://github.com/YOUR_NAME/dsh-feed-node.git
+git clone https://github.com/ebi233/dsh-feed-node.git
 cd dsh-feed-node
 npm install
 ```
