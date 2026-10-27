@@ -31,6 +31,31 @@ So this project keeps the browsing where it belongs — **on your home machine**
 
 ---
 
+## Works for both cloud and local agents
+
+The project is split in two halves — **only the "how do I connect" part changes**:
+
+| Where the agent runs | Tunnel needed? | `FEED_NODE_URL` in the plugin |
+| --- | --- | --- |
+| **Same machine** (DSH desktop) | ❌ no | `http://127.0.0.1:8787` |
+| **Cloud server** | ✅ reverse SSH | `http://127.0.0.1:18787` |
+| Another machine (LAN) | ❌ open the port | `http://<machine ip>:8787` |
+
+```
+fetch node (src/server.mjs)   ← only cares about "browser + logged-in session"
+        ↑ HTTP
+DSH plugin (plugin/)          ← only cares about "one URL"
+```
+
+- **Local is the simplest**: `npm start` + point the plugin at `8787`. No tunnel, no scheduled tasks.
+- **Cloud adds one step**: a reverse tunnel (`scripts/install-tasks.ps1` does it in one command).
+- One node can serve several agents at once (local on 8787, cloud via 18787, **sharing the same login**).
+
+> ⚠️ The node must run on **your own PC** (it needs your home IP and your QR login).
+> **Don't** deploy it to a cloud server — datacenter IPs are blocked by Xiaohongshu/Douyin, which is exactly why this project exists.
+
+---
+
 ## Layout
 
 ```
