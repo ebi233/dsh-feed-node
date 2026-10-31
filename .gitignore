@@ -4,3 +4,23 @@ shots/
 *.log
 .DS_Store
 .env
+
+# Local agent data and credentials must never be committed
+**/persona.md
+**/memory-long.md
+**/learnings.md
+**/qq-bridge-config.json
+**/guests.json
+**/groups.json
+**/group-session-seals.json
+**/conversation-notes/
+**/guest-memory/
+**/fish-memory/
+**/sessions/
+**/archive/
+*.pem
+*.key
+id_ed25519*
+id_rsa*
+.env.*
+!.env.example

@@ -23,3 +23,6 @@ jobs:
 
       - name: Syntax check (server + plugin)
         run: npm run check
+
+      - name: Scoped memory syntax and ranking tests
+        run: npm --prefix memory-scoped test

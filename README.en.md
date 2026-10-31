@@ -352,3 +352,9 @@ MIT. See [LICENSE](LICENSE).
 ## Disclaimer
 
 For learning browser automation and agent tooling. Respect the Terms of Service of Xiaohongshu and Douyin and your local laws. You are responsible for any account bans or data loss caused by using this project.
+
+## On-demand memory upgrade
+
+See [memory-scoped/README.md](memory-scoped/README.md) for the new scoped recall module: BM25-style Chinese/English keyword ranking, time decay for ordinary records, stable important facts, and one adjacent context message. Retrieval itself makes no model calls.
+
+The existing `memory-long/` plugin injects memories on every turn. `memory-scoped/` is an alternative, not a companion to run alongside it. It requires trusted account/session bindings and does not configure host compaction or migrate private data. The public package contains generic identity rules only, with no personal persona, account configuration, or real conversation records.

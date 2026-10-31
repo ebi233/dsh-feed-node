@@ -1,0 +1,4 @@
+# On-demand scoped memory; replace the legacy memory plugin, do not co-install
+- insert:
+    - id: scoped-memory
+      name: dsh-scoped-memory
